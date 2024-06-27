@@ -10,10 +10,12 @@ export function subscribe<T>(
   subscriber: Subscriber<T>
 ): Unsubscribe {
   let subs = $$subs.get(state);
+
   if (typeof subs === "undefined") {
     subs = new Set();
     $$subs.set(state, subs);
   }
+
   subs.add(subscriber as Subscriber);
 
   return function unsubscribe() {
@@ -25,16 +27,19 @@ export function subscribeMany(
   states: Iterable<State>,
   subscriber: (trigger: State) => void
 ): Unsubscribe {
-  const unsubs = new Set<Unsubscribe>();
-  for (const state of states) {
-    const unsub = subscribe(state, (_) => {
-      subscriber(state);
-    });
-    unsubs.add(unsub);
-  }
+  const unsubs = new Set(
+    Array.from(states).map((state) => {
+      return subscribe(state, (_) => {
+        subscriber(state);
+      });
+    })
+  );
 
   return function unsubscribeAll() {
-    for (const unsub of unsubs) unsub();
+    for (const unsub of unsubs) {
+      unsub();
+    }
+
     unsubs.clear();
   };
 }
@@ -44,6 +49,7 @@ export function subscribeOnce<T>(state: State<T>, subscriber: Subscriber<T>) {
     subscriber(value, old);
     unsub();
   });
+
   return unsub;
 }
 
@@ -52,7 +58,9 @@ export function subscribeImmediate<T>(
   subscriber: Subscriber<T>
 ) {
   const unsub = subscribe(state, subscriber);
+
   subscriber(state.value, undefined);
+
   return unsub;
 }
 
@@ -70,6 +78,7 @@ export type Destroy = () => void;
 export type Destroyable = {
   destroy: Destroy;
 };
+
 export function destroy(state: State) {
   $$subs.delete(state);
 }

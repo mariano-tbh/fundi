@@ -7,19 +7,25 @@ export type State<T = unknown> = {
   value: T;
 };
 
-export function state<T>(state: T): State<T>;
+export function state<T>(initialState: T): State<T>;
+export function state<T>(factory: () => T): State<T>;
 export function state<T>(): State<T | undefined>;
 export function state<T>(start?: T) {
   let value: T;
-
-  if (typeof start !== "undefined") {
-    value = start;
-  }
 
   return Object.seal({
     [$$STATE]: true,
     get value(): T {
       register(this);
+
+      if (typeof value === "undefined") {
+        if (typeof start === "function") {
+          value = start();
+        } else if (typeof start !== "undefined") {
+          value = start;
+        }
+      }
+
       return value;
     },
     set value(next: T) {

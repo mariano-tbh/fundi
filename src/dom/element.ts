@@ -8,20 +8,20 @@ export type ElementFactory<Props extends {} = {}> = (
 ) => ElementDefinition;
 
 export type ElementDefinition = {
-  imports?: Record<string, () => Mount>;
+  imports?: Record<string, () => Element>;
   handle?: Record<string, Record<string, EventListener>>;
   render(): string;
 };
 
 export type ElementConfiguration = {} & Destroyable;
 
-export type Mount = (root: HTMLElement) => ElementConfiguration;
+export type Element = (root: HTMLElement) => ElementConfiguration;
 
 export function element<Props extends {} = {}>(factory: ElementFactory<Props>) {
-  return function mount(props: Props): Mount {
-    return function render(root: HTMLElement): ElementConfiguration {
-      const { handle = {}, imports = {}, render } = factory(props);
+  return function mount(props: Props): Element {
+    const { handle = {}, imports = {}, render } = factory(props);
 
+    return function (root: HTMLElement): ElementConfiguration {
       const e = effect(({ signal }) => {
         root.innerHTML = render();
 
