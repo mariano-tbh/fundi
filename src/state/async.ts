@@ -41,7 +41,6 @@ export function async<
 
   effect(async ({ signal }) => {
     _state.status = "pending";
-
     try {
       _state.value = await loader({ signal });
       _state.status = "fulfilled";

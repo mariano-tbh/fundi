@@ -1,5 +1,6 @@
 import { element } from "../src/dom/element.js";
 import { Counter } from "./components/counter.js";
+import { TodoInfo } from "./components/todo-info.js";
 import { TodoList } from "./components/todo-list.js";
 
 const App = element(() => {
@@ -13,11 +14,13 @@ const App = element(() => {
           },
         }),
       "div#todos": () => TodoList({}),
+      "div#todo-info": () => TodoInfo({}),
     },
     render() {
       return `<div>
         <div id="counter"></div>
         <div id="todos"></div>
+        <div id="todo-info"></div>
       </div>`;
     },
   };

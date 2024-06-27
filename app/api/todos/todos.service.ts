@@ -31,17 +31,23 @@ const todos: Todo[] = [
 ];
 
 export async function getTodos() {
-  await sleep(200);
+  await sleep();
   return todos;
 }
 
 export async function getTodoById(id: TodoId) {
-  await sleep(200);
-  return todos.find((todo) => todo.id === id) ?? null;
+  await sleep();
+  const todo = todos.find((todo) => todo.id === id);
+
+  if (todo === undefined) {
+    throw new Error("todo not found");
+  }
+
+  return todo;
 }
 
 export async function createTodo(input: CreateTodo) {
-  await sleep(200);
+  await sleep();
   return todos.unshift({
     ...input,
     id: Math.max(...todos.map((todo) => todo.id)) + 1,
@@ -53,31 +59,24 @@ export async function createTodo(input: CreateTodo) {
 }
 
 export async function updateTodo(id: TodoId, input: UpdateTodo) {
-  await sleep(200);
+  await sleep();
   const todo = await getTodoById(id);
 
-  if (todo === null) {
-    throw new Error("todo not found");
-  }
-
   Object.assign(todo, input);
-
   todo.updatedAt = new Date();
 
   return todo;
 }
 
 export async function deleteTodo(id: TodoId) {
-  await sleep(200);
+  await sleep();
   const todo = await getTodoById(id);
 
-  if (todo === null) {
-    throw new Error("todo not found");
-  }
-
   todos.splice(todos.indexOf(todo), 1);
+  todo.deletedAt = new Date();
 
   return todo;
 }
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number = Math.random() * 1000) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

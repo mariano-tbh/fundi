@@ -11,7 +11,7 @@ export const TodoList = element(() => {
 
   return {
     render() {
-      const { value, status, error } = todos;
+      const { value, status } = todos;
 
       if (status === "pending") {
         return "<h1>loading...</h1>";
