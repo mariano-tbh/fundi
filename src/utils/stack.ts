@@ -5,8 +5,8 @@ export class Stack<T> {
     this.#stack.unshift();
   }
 
-  get current(): T | null {
-    return this.#stack[0] ?? null;
+  get current(): T | undefined {
+    return this.#stack[0];
   }
 
   set current(next: T) {

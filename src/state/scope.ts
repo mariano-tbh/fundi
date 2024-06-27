@@ -2,8 +2,10 @@ import { Stack } from "../utils/stack.js";
 import { State } from "./state.js";
 
 export type Action = () => void;
+
 const $$scopes = new Stack<Action>();
 const $$deps = new Map<Action, Set<State>>();
+
 export function scope(action: Action) {
   const deps = new Set<State>();
   $$deps.set(action, deps);
@@ -16,7 +18,7 @@ export function scope(action: Action) {
 export function register(state: State) {
   const { current } = $$scopes;
 
-  if (current === null) return;
+  if (typeof current === "undefined") return;
 
   let deps = $$deps.get(current);
   if (typeof deps === "undefined") {

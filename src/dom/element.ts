@@ -17,7 +17,7 @@ export type ElementConfiguration = {} & Destroyable;
 
 export type Mount = (root: HTMLElement) => ElementConfiguration;
 
-export function element<Props extends {} = {}>(factory: ElementFactory) {
+export function element<Props extends {} = {}>(factory: ElementFactory<Props>) {
   return function mount(props: Props): Mount {
     return function render(root: HTMLElement): ElementConfiguration {
       const { handle = {}, imports = {}, render } = factory(props);

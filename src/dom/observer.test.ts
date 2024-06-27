@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { observe } from "./observer.js";
+import { observe, onRemoveNode } from "./observer.js";
 import { waitFor } from "@testing-library/dom";
 
 describe("observer", () => {
@@ -17,6 +17,7 @@ describe("observer", () => {
     child.id = id;
 
     observe(container);
+    onRemoveNode(child, cb);
     container.appendChild(child);
     container.innerHTML = "";
 

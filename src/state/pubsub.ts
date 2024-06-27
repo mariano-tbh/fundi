@@ -1,8 +1,10 @@
 import { State } from "./state.js";
 
-const $$subs = new Map<State, Set<Subscriber>>();
 export type Subscriber<T = unknown> = (value: T, old: T | undefined) => void;
 export type Unsubscribe = () => void;
+
+const $$subs = new Map<State, Set<Subscriber>>();
+
 export function subscribe<T>(
   state: State<T>,
   subscriber: Subscriber<T>
