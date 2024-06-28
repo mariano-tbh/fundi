@@ -14,13 +14,13 @@ export const TodoList = component(() => {
       const { value, status } = todos;
 
       if (status === "pending") {
-        return "<h1>loading...</h1>";
+        return /*html*/ `<h1>loading...</h1>`;
       }
 
-      return `<ul>
+      return /*html*/ `<ul>
         ${value
           .map((todo) => {
-            return `<li>
+            return /*html*/ `<li>
               <a href="/todo-info?todoId=${todo.id}">
                 <h3>${todo.title}</h3>
               </a>

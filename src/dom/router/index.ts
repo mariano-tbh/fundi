@@ -8,11 +8,13 @@ export type Path = `/${string}`;
 export function router<
   Paths extends Record<Path, ({}: {}) => Component>,
 >(config: {
+  basePath?: Path;
   initialPath?: keyof Paths & Path;
   fallback: ({}: {}) => Component;
   paths: Paths;
 }) {
   const {
+    basePath = window.location.pathname as Path,
     initialPath = window.location.pathname as Path,
     paths,
     fallback,
@@ -48,6 +50,7 @@ export function router<
           path.value = lastRoute;
         }
       },
+      paths: Object.keys(paths).map((k) => [k, k]) as { [K in keyof Paths]: K },
     }
   );
 

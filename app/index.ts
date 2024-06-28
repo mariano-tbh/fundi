@@ -1,13 +1,14 @@
+import "./index.css";
 import { component } from "../src/dom/component.js";
-import { _router } from "./_router.js";
+import router from "./_router.js";
 
 const App = component(() => {
   return {
     imports: {
-      "main#router": () => _router.value({}),
+      "main#router": () => router.value({}),
     },
     render() {
-      return `<div>
+      return /*html*/ `<div>
         <main id="router"></main>
       </div>`;
     },
@@ -16,6 +17,4 @@ const App = component(() => {
 
 const root = document.getElementById("root")!;
 
-const instance = App({})(root);
-
-(window as any).unmount = () => instance.destroy();
+App({})(root);

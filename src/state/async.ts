@@ -23,14 +23,23 @@ export type AsyncState<T, E = unknown, I extends T | undefined = undefined> =
   | FulfilledState<T>
   | RejectedState<I, E>;
 
-export function async<
-  T,
-  E = unknown,
-  I extends T | undefined = undefined,
->(config: {
-  loader: ({ signal }: { signal: AbortSignal }) => Promise<T>;
+export type Loader<T> = ({ signal }: { signal: AbortSignal }) => Promise<T>;
+export type AsyncConfig<T, I extends T | undefined> = {
+  loader: Loader<T>;
   initialValue?: I;
-}) {
+};
+
+export function async<T, E = unknown>(loader: Loader<T>): AsyncState<T, E>;
+export function async<T, E = unknown, I extends T | undefined = undefined>(
+  config: AsyncConfig<T, I>,
+): AsyncState<T, E, I>;
+export function async<T, E = unknown, I extends T | undefined = undefined>(
+  config: Loader<T> | AsyncConfig<T, I>,
+) {
+  if (typeof config === "function") {
+    config = { loader: config };
+  }
+
   const { loader, initialValue } = config;
 
   const _state = store({

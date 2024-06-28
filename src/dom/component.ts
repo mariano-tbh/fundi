@@ -1,60 +1,25 @@
-import { derived } from "../state/derived.js";
+import type { ParseSelector } from "typed-query-selector/parser.js";
 import { effect } from "../state/effect.js";
-import { Destroyable, subscribeImmediate } from "../state/pubsub.js";
 import { observe, onRemoveNode } from "./observer.js";
+import { Directive } from "./directives/_directive.js";
 
-export type ComponentFactory<Props extends {} = {}> = (
-  props: Props
-) => ComponentDefinition;
+export type ComponentFactory<P extends {}> = (props: P) => ComponentDefinition;
 
 export type ComponentDefinition = {
-  imports?: Record<string, ({}: {}) => Component>;
-  handle?: Record<string, Record<string, EventListener>>;
-  ref?: Record<
-    string,
-    [(element: Element[]) => void] | ((element: Element[]) => void)
-  >;
+  ref?: (root: HTMLElement) => void;
   render(): string;
 };
 
-export type ComponentRef = {} & Destroyable;
+export type Component = Directive<HTMLElement>;
 
-export type Component = (root: HTMLElement) => ComponentRef;
+export function component<P extends {}>(factory: ComponentFactory<P>) {
+  return function mount(props: P): Directive<HTMLElement> {
+    return (root) => {
+      const { ref, render } = factory(props);
 
-export function component<Props extends {} = {}>(
-  factory: ComponentFactory<Props>
-) {
-  return function mount(props: Props): Component {
-    const { handle = {}, imports = {}, ref = {}, render } = factory(props);
-
-    return function (root: HTMLElement): ComponentRef {
       const e = effect(({ signal }) => {
         root.innerHTML = render();
-
-        for (const [selector, config] of Object.entries(handle)) {
-          const el = root.querySelector(selector);
-          if (el === null) continue;
-          for (const [event, listener] of Object.entries(config)) {
-            el.addEventListener(event, listener);
-            signal.addEventListener("abort", () => {
-              el.removeEventListener(event, listener);
-            });
-          }
-        }
-
-        for (const [selector, factory] of Object.entries(imports)) {
-          const el = root.querySelector(selector);
-          if (el === null) continue;
-          if (!(el instanceof HTMLElement)) {
-            console.warn(`${selector} is not a valid ${HTMLElement.name}`);
-            continue;
-          }
-
-          const child = derived(() => factory({}));
-          subscribeImmediate(child, (mount) => {
-            mount(el);
-          });
-        }
+        ref?.(root);
       });
 
       const self = Object.seal({
@@ -68,8 +33,6 @@ export function component<Props extends {} = {}>(
       onRemoveNode(root, () => {
         self.destroy();
       });
-
-      return self;
     };
   };
 }
