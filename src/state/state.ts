@@ -44,3 +44,28 @@ export function isState(it: unknown): it is State {
     it[$$STATE] === true
   );
 }
+
+export function extend<
+  S extends State<any>,
+  P extends Record<PropertyKey, unknown>,
+>(state: S, props: P): S & P;
+export function extend<S extends State<any>, P extends PropertyKey, V>(
+  state: S,
+  propertyKey: P,
+  value: V
+): S & {
+  [K in P]: V;
+};
+export function extend<S extends State<any>, P extends PropertyKey, V>(
+  ...args:
+    | [state: S, props: Record<P, V>]
+    | [state: S, propertyKey: P, value: V]
+) {
+  const [state, prop, value] = args;
+
+  if (typeof prop === "object") {
+    return Object.assign({}, state, prop);
+  } else {
+    return Object.assign({}, state, { [prop]: value });
+  }
+}

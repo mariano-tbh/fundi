@@ -1,8 +1,8 @@
-import { element } from "../../src/dom/element.js";
+import { component } from "../../src/dom/component.js";
 import { async } from "../../src/state/async.js";
 import { getTodoById } from "../api/todos/todos.service.js";
 
-export const TodoInfo = element(() => {
+export const TodoInfo = component(() => {
   const todo = async({
     loader: () => {
       const todoId = new URLSearchParams(window.location.search).get("todoId");

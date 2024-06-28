@@ -1,5 +1,7 @@
 import { State } from "./state.js";
 
+const REF = Symbol();
+
 export type Subscriber<T = unknown> = (value: T, old: T | undefined) => void;
 export type Unsubscribe = () => void;
 

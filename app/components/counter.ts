@@ -1,9 +1,9 @@
-import { element } from "../../src/dom/element.js";
+import { component } from "../../src/dom/component.js";
 import { effect } from "../../src/state/effect.js";
 import { subscribe } from "../../src/state/pubsub.js";
 import { state } from "../../src/state/state.js";
 
-export const Counter = element<{
+export const Counter = component<{
   start: number;
   onChange(value: number): void;
 }>(({ start, onChange }) => {

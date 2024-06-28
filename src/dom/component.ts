@@ -3,25 +3,31 @@ import { effect } from "../state/effect.js";
 import { Destroyable, subscribeImmediate } from "../state/pubsub.js";
 import { observe, onRemoveNode } from "./observer.js";
 
-export type ElementFactory<Props extends {} = {}> = (
+export type ComponentFactory<Props extends {} = {}> = (
   props: Props
-) => ElementDefinition;
+) => ComponentDefinition;
 
-export type ElementDefinition = {
-  imports?: Record<string, () => Element>;
+export type ComponentDefinition = {
+  imports?: Record<string, ({}: {}) => Component>;
   handle?: Record<string, Record<string, EventListener>>;
+  ref?: Record<
+    string,
+    [(element: Element[]) => void] | ((element: Element[]) => void)
+  >;
   render(): string;
 };
 
-export type ElementConfiguration = {} & Destroyable;
+export type ComponentRef = {} & Destroyable;
 
-export type Element = (root: HTMLElement) => ElementConfiguration;
+export type Component = (root: HTMLElement) => ComponentRef;
 
-export function element<Props extends {} = {}>(factory: ElementFactory<Props>) {
-  return function mount(props: Props): Element {
-    const { handle = {}, imports = {}, render } = factory(props);
+export function component<Props extends {} = {}>(
+  factory: ComponentFactory<Props>
+) {
+  return function mount(props: Props): Component {
+    const { handle = {}, imports = {}, ref = {}, render } = factory(props);
 
-    return function (root: HTMLElement): ElementConfiguration {
+    return function (root: HTMLElement): ComponentRef {
       const e = effect(({ signal }) => {
         root.innerHTML = render();
 
@@ -44,7 +50,7 @@ export function element<Props extends {} = {}>(factory: ElementFactory<Props>) {
             continue;
           }
 
-          const child = derived(factory);
+          const child = derived(() => factory({}));
           subscribeImmediate(child, (mount) => {
             mount(el);
           });

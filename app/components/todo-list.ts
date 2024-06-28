@@ -1,9 +1,9 @@
-import { Element, element } from "../../src/dom/element.js";
+import { Component, component } from "../../src/dom/component.js";
 import { async } from "../../src/state/async.js";
 import { Todo } from "../api/todos/todos.dtos.js";
 import { getTodos } from "../api/todos/todos.service.js";
 
-export const TodoList = element(() => {
+export const TodoList = component(() => {
   const todos = async({
     loader: () => getTodos(),
     initialValue: [] as Todo[],
@@ -21,7 +21,9 @@ export const TodoList = element(() => {
         ${value
           .map((todo) => {
             return `<li>
+              <a href="/todo-info?todoId=${todo.id}">
                 <h3>${todo.title}</h3>
+              </a>
             </li>`;
           })
           .join("")}
