@@ -1,6 +1,6 @@
 import { component } from "../../src/dom/component.js";
 import { on } from "../../src/dom/directives/on.js";
-import { model } from "../../src/dom/model.js";
+import { $ } from "../../src/dom/model.js";
 import { effect } from "../../src/state/effect.js";
 import { subscribe } from "../../src/state/pubsub.js";
 import { state } from "../../src/state/state.js";
@@ -20,7 +20,7 @@ export const Counter = component<{
   });
 
   return {
-    ref: model({
+    model: $({
       "button#inc": on("click", () => count.value++),
       "button#dec": on("click", () => count.value--),
     }),

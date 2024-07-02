@@ -2,36 +2,40 @@ import type { ParseSelector } from "typed-query-selector/parser.js";
 import { effect } from "../state/effect.js";
 import { observe, onRemoveNode } from "./observer.js";
 import { Directive } from "./directives/_directive.js";
+import { scope } from "../state/scope.js";
+import { destroy } from "../state/pubsub.js";
 
 export type ComponentFactory<P extends {}> = (props: P) => ComponentDefinition;
 
 export type ComponentDefinition = {
-  ref?: (root: HTMLElement) => void;
+  model?: (root: HTMLElement) => void;
   render(): string;
 };
 
 export type Component = Directive<HTMLElement>;
 
 export function component<P extends {}>(factory: ComponentFactory<P>) {
-  return function mount(props: P): Directive<HTMLElement> {
+  return (props: P): Directive<HTMLElement> => {
     return (root) => {
-      const { ref, render } = factory(props);
+      const { model, render } = factory(props);
 
-      const e = effect(({ signal }) => {
+      effect(({ signal: _ }) => {
         root.innerHTML = render();
-        ref?.(root);
+        model?.(root);
       });
 
-      const self = Object.seal({
+      const def = Object.seal({
         destroy() {
-          e.destroy();
+          // for (const dep of deps) {
+          //   destroy(dep);
+          // }
         },
       });
 
       observe(root);
 
       onRemoveNode(root, () => {
-        self.destroy();
+        def.destroy();
       });
     };
   };

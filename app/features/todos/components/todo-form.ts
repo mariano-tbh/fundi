@@ -1,7 +1,6 @@
 import { z } from "zod";
-import { component } from "../../src/dom/component.js";
-import { ParseSelector } from "typed-query-selector/parser.js";
-import { model } from "../../src/dom/model.js";
+import { component } from "../../../../src/dom/component.js";
+import { $ } from "../../../../src/dom/model.js";
 
 export type TodoFormValue = z.infer<typeof TodoFormValue>;
 export const TodoFormValue = z.object({
@@ -12,7 +11,10 @@ export const TodoFormValue = z.object({
 export const TodoForm = component(
   ({ defaultValue }: { defaultValue?: TodoFormValue }) => {
     return {
-      ref: model({
+      model: $({
+        li: (li) => {
+          li.innerHTML;
+        },
         "form#todo-form": (form) => {
           form.addEventListener("submit", (event) => {
             event.preventDefault();

@@ -1,5 +1,5 @@
 import { publish } from "./pubsub.js";
-import { register } from "./scope.js";
+import { scope } from "./scope.js";
 
 const $$STATE = Symbol();
 
@@ -13,10 +13,10 @@ export function state<T>(): State<T | undefined>;
 export function state<T>(start?: T) {
   let value: T;
 
-  return Object.seal({
+  const self = Object.seal({
     [$$STATE]: true,
     get value(): T {
-      register(this);
+      scope.register(self);
 
       if (typeof value === "undefined") {
         if (typeof start === "function") {
@@ -34,6 +34,8 @@ export function state<T>(start?: T) {
       publish(this, value, old);
     },
   }) as State<T>;
+
+  return self;
 }
 
 export function isState(it: unknown): it is State {
@@ -52,7 +54,7 @@ export function extend<
 export function extend<S extends State<any>, P extends PropertyKey, V>(
   state: S,
   propertyKey: P,
-  value: V
+  value: V,
 ): S & {
   [K in P]: V;
 };

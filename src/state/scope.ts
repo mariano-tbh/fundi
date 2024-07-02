@@ -15,7 +15,7 @@ export function scope(action: Action) {
   return deps;
 }
 
-export function register(state: State) {
+scope.register = function (state: State) {
   const { current } = $$scopes;
 
   if (typeof current === "undefined") return;
@@ -26,4 +26,4 @@ export function register(state: State) {
     $$deps.set(current, deps);
   }
   deps.add(state);
-}
+};

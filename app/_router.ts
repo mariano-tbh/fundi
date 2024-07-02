@@ -1,18 +1,20 @@
 import { component } from "../src/dom/component.js";
-import { router } from "../src/dom/router/index.js";
+import { router } from "../src/dom/router/router.js";
 import { Counter } from "./components/counter.js";
-import { TodoForm } from "./components/todo-form.js";
-import { TodoInfo } from "./components/todo-info.js";
-import { TodoList } from "./components/todo-list.js";
+import { TodoList } from "./features/todos/components/todo-list.js";
+import { AddTodo } from "./features/todos/pages/add-todo.js";
+import { EditTodo } from "./features/todos/pages/edit-todo.js";
+import { Todos } from "./features/todos/pages/index.js";
+import { TodoDetails } from "./features/todos/pages/todo-details.js";
 
 const NotFound = component(() => ({
   render() {
+    debugger;
     return `<h1 class="text-3xl font-bold">oops! not found :(</h1>`;
   },
 }));
 
 export default router({
-  basePath: "/",
   fallback: NotFound,
   paths: {
     "/home": () =>
@@ -22,9 +24,9 @@ export default router({
           console.log("value is: ", value);
         },
       }),
-    "/todo/:id": () => TodoInfo({ foo: "" }),
-    "/todos": () => TodoList({}),
-    "/create-todo": () => TodoForm({}),
-    "/edit-todo": () => TodoForm({}),
+    "/todos": Todos,
+    "/todo/:id": TodoDetails,
+    "/todos/add": AddTodo,
+    "/todo/:id/edit": EditTodo,
   },
 });

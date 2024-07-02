@@ -1,11 +1,11 @@
-import { CreateTodo, Todo, TodoId, UpdateTodo } from "./todos.dtos.js";
+import { CreateTodo, Todo, TodoId, UpdateTodo } from "../dtos/todos.dtos.js";
 
 const todos: Todo[] = [
   {
     id: 1,
     title: "do laundry",
     description: null,
-    done: false,
+    done: true,
     createdAt: new Date(),
     updatedAt: null,
     deletedAt: null,

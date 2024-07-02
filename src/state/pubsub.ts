@@ -9,7 +9,7 @@ const $$subs = new Map<State, Set<Subscriber>>();
 
 export function subscribe<T>(
   state: State<T>,
-  subscriber: Subscriber<T>
+  subscriber: Subscriber<T>,
 ): Unsubscribe {
   let subs = $$subs.get(state);
 
@@ -27,14 +27,14 @@ export function subscribe<T>(
 
 export function subscribeMany(
   states: Iterable<State>,
-  subscriber: (trigger: State) => void
+  subscriber: (trigger: State) => void,
 ): Unsubscribe {
   const unsubs = new Set(
     Array.from(states).map((state) => {
       return subscribe(state, (_) => {
         subscriber(state);
       });
-    })
+    }),
   );
 
   return function unsubscribeAll() {
@@ -57,7 +57,7 @@ export function subscribeOnce<T>(state: State<T>, subscriber: Subscriber<T>) {
 
 export function subscribeImmediate<T>(
   state: State<T>,
-  subscriber: Subscriber<T>
+  subscriber: Subscriber<T>,
 ) {
   const unsub = subscribe(state, subscriber);
 
@@ -82,5 +82,23 @@ export type Destroyable = {
 };
 
 export function destroy(state: State) {
+  const cbs = $$cbs.get(state);
+
+  if (typeof cbs !== "undefined") {
+    for (const cb of cbs) {
+      cb(state);
+    }
+  }
+
   $$subs.delete(state);
+}
+
+const $$cbs = new Map<State, Set<(state: State) => void>>();
+export function onDestroy(state: State, cb: (state: State) => void) {
+  let cbs = $$cbs.get(state);
+  if (typeof cbs === "undefined") {
+    cbs = new Set();
+    $$cbs.set(state, cbs);
+  }
+  cbs.add(cb);
 }
