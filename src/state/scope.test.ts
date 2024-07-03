@@ -24,25 +24,28 @@ describe("scope", () => {
     const depB = state(0);
     const depC = state(0);
 
-    const deps = scope(() => {
-      depC.value = depA.value + depB.value;
+    const deps1 = scope(() => {
+      depA.value = depB.value + depC.value;
 
-      const deps = scope(() => {
-        depB.value = depC.value + depA.value;
+      const deps2 = scope(() => {
+        depB.value = depA.value + depC.value;
 
-        const deps = scope(() => {
-          depA.value = depC.value + depB.value;
+        const deps3 = scope(() => {
+          depC.value = depA.value + depB.value;
         });
-        expect(deps).not.toContain(depA);
-        expect(deps).toContain(depB);
-        expect(deps).toContain(depC);
+
+        expect(deps3.has(depA)).toBeTruthy();
+        expect(deps3.has(depB)).toBeTruthy();
+        expect(deps3.has(depC)).toBeFalsy();
       });
-      expect(deps).toContain(depA);
-      expect(deps).not.toContain(depB);
-      expect(deps).toContain(depC);
+
+      expect(deps2.has(depA)).toBeTruthy();
+      expect(deps2.has(depB)).toBeFalsy();
+      expect(deps2.has(depC)).toBeTruthy();
     });
-    expect(deps).toContain(depA);
-    expect(deps).toContain(depB);
-    expect(deps).not.toContain(depC);
+
+    expect(deps1.has(depA)).toBeFalsy();
+    expect(deps1.has(depB)).toBeTruthy();
+    expect(deps1.has(depC)).toBeTruthy();
   });
 });

@@ -1,13 +1,12 @@
-import type { ParseSelector } from "typed-query-selector/parser.js";
 import { effect } from "../state/effect.js";
 import { observe, onRemoveNode } from "./observer.js";
 import { Directive } from "./directives/_directive.js";
-import { scope } from "../state/scope.js";
-import { destroy } from "../state/pubsub.js";
+import { context } from "../context/context.js";
 
 export type ComponentFactory<P extends {}> = (props: P) => ComponentDefinition;
 
 export type ComponentDefinition = {
+  usings?: ReturnType<ReturnType<typeof context<any>>>[];
   model?: (root: HTMLElement) => void;
   render(): string;
 };
@@ -17,11 +16,15 @@ export type Component = Directive<HTMLElement>;
 export function component<P extends {}>(factory: ComponentFactory<P>) {
   return (props: P): Directive<HTMLElement> => {
     return (root) => {
-      const { model, render } = factory(props);
+      const { usings = [], model, render } = factory(props);
 
       effect(({ signal: _ }) => {
         root.innerHTML = render();
-        model?.(root);
+        const mount = usings.reduce<() => void>(
+          (prev, next) => () => next(prev),
+          () => model?.(root),
+        );
+        mount();
       });
 
       const def = Object.seal({

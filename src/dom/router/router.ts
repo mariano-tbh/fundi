@@ -1,11 +1,11 @@
-import { context } from "../../context/index.js";
+import { context, use } from "../../context/context.js";
 import { derived } from "../../state/derived.js";
 import { onDestroy, subscribe } from "../../state/pubsub.js";
 import { extend, state } from "../../state/state.js";
 import type { Component } from "../component.js";
 import { Path, PathParams, matchPath } from "./utils/path.js";
 
-const routerContext = context<Router<any>>();
+const CurrentRouter = context<Router<any>>();
 
 export type Router<
   Paths extends {
@@ -20,7 +20,7 @@ export function router<
 >(config: { paths: Paths; fallback: ({}: {}) => Component }) {
   const { paths, fallback } = config;
 
-  const parentRouter = routerContext.consume();
+  const parentRouter = use(CurrentRouter);
   const toFullPath = (path: Path): Path => {
     return [parentRouter?.value, path].filter(Boolean).join("/") as Path;
   };

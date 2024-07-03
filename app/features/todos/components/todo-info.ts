@@ -2,12 +2,16 @@ import { format } from "date-fns";
 import { component } from "../../../../src/dom/component.js";
 import { $ } from "../../../../src/dom/model.js";
 import { Todo } from "../dtos/todos.dtos.js";
+import { context } from "../../../../src/context/context.js";
+import { CurrentTodo, TodoFootprint } from "./todo-footprint.js";
 
 export const TodoInfo = component<{ todo: Todo }>(({ todo }) => {
-  const { title, done, description, createdAt, deletedAt, updatedAt } = todo;
+  const { title, done, description } = todo;
 
   return {
+    usings: [CurrentTodo(todo)],
     model: $({
+      footer: TodoFootprint({}),
       input: (checkbox) => {
         checkbox.checked = done;
       },
@@ -22,9 +26,6 @@ export const TodoInfo = component<{ todo: Todo }>(({ todo }) => {
           <span>done</span>
         </label>
         <footer>
-          <p><small>created at: ${format(createdAt, "pp")}</small></p>
-          <p><small>updated at: ${updatedAt ? format(createdAt, "pp") : "-"}</small></p>
-          <p><small>deleted at: ${deletedAt ? format(createdAt, "pp") : "-"}</small></p>
         </footer>
       `;
     },
