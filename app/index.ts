@@ -4,7 +4,7 @@ import router from "./_router.js";
 
 const App = component(() => {
   return {
-    model: $({
+    bind: $({
       "main#router": (main) => router.route(main),
     }),
     render() {

@@ -11,7 +11,7 @@ export const TodoFormValue = z.object({
 export const TodoForm = component(
   ({ defaultValue }: { defaultValue?: TodoFormValue }) => {
     return {
-      model: $({
+      bind: $({
         li: (li) => {
           li.innerHTML;
         },

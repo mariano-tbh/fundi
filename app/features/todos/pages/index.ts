@@ -11,7 +11,7 @@ export const Todos = component(() => {
   subscribe(todos, console.log);
 
   return {
-    model: $({
+    bind: $({
       "div#todo-list": () =>
         TodoList({
           todos: todos.value ?? [],

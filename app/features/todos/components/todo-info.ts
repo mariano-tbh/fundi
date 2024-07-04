@@ -1,16 +1,14 @@
-import { format } from "date-fns";
 import { component } from "../../../../src/dom/component.js";
 import { $ } from "../../../../src/dom/model.js";
 import { Todo } from "../dtos/todos.dtos.js";
-import { context } from "../../../../src/context/context.js";
 import { CurrentTodo, TodoFootprint } from "./todo-footprint.js";
 
 export const TodoInfo = component<{ todo: Todo }>(({ todo }) => {
   const { title, done, description } = todo;
 
   return {
-    usings: [CurrentTodo(todo)],
-    model: $({
+    provide: [],
+    bind: $({
       footer: TodoFootprint({}),
       input: (checkbox) => {
         checkbox.checked = done;

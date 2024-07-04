@@ -20,7 +20,7 @@ export const Counter = component<{
   });
 
   return {
-    model: $({
+    bind: $({
       "button#inc": on("click", () => count.value++),
       "button#dec": on("click", () => count.value--),
     }),

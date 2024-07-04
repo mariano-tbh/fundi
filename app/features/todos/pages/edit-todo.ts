@@ -8,7 +8,7 @@ export const EditTodo = component<{ id: string }>(({ id }) => {
   const todo = useTodo(+id);
 
   return {
-    model: $({
+    bind: $({
       "div#todo-form": () => {
         if (todo.value)
           return TodoForm({

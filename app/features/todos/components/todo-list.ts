@@ -9,7 +9,7 @@ export const TodoList = component<{
 }>(({ todos, onClickTodo }) => {
   console.log({ todos });
   return {
-    model: $({
+    bind: $({
       a: {
         select: "all",
         directive: on("click", (event) => {

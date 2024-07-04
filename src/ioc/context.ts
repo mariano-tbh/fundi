@@ -1,121 +1,43 @@
-import { SmartMap } from "../utils/smart-map.js";
-import { Declaration } from "./declare.js";
+export type Context<T> = (value: T) => (action: () => void) => void;
 
-export type ProviderScope = "scoped" | "transient" | "singleton";
+const CTX_VALUE = Symbol();
 
-export type Provider<T> = (
-  | {
-      value: T;
-    }
-  | {
-      factory: (...args: any[]) => T;
-    }
-  | {
-      class: new (...args: any[]) => T;
-    }
-) & {
-  scope?: ProviderScope;
-};
+export function context<T>(initialValue?: T): Context<T> {
+  let current: T | undefined = initialValue;
 
-const __singletonScope = {};
+  function provider(value: T) {
+    const prev = current;
+    return function run(action: () => void) {
+      current = value;
+      action();
+      current = prev;
+    };
+  }
 
-export type Context = ReturnType<typeof context>;
-export function context(
-  config: {
-    defaultScope?: ProviderScope;
-  } = {}
-) {
-  const { defaultScope = "singleton" } = config;
-
-  const providers = new SmartMap<symbol, Provider<unknown>>();
-  const scopes = new SmartMap<{}, SmartMap<symbol, unknown>>({
-    get defaultValue() {
-      return new SmartMap<symbol, unknown>();
+  Object.defineProperty(provider, CTX_VALUE, {
+    enumerable: true,
+    configurable: false,
+    get() {
+      return current;
     },
   });
 
-  return Object.seal({
-    add<T>(contract: Declaration<T>, provide: Provider<T>) {
-      providers.set(contract.token, {
-        scope: defaultScope,
-        ...provide,
-      });
-      return this;
-    },
-    addScoped<T>(
-      contract: Declaration<T>,
-      provide: Provider<T> & { scope?: never }
-    ) {
-      return this.add(contract, { ...provide, scope: "scoped" });
-    },
-    addSingleton<T>(
-      contract: Declaration<T>,
-      provide: Provider<T> & { scope?: never }
-    ) {
-      return this.add(contract, { ...provide, scope: "singleton" });
-    },
-    addTransient<T>(
-      contract: Declaration<T>,
-      provide: Provider<T> & { scope?: never }
-    ) {
-      return this.add(contract, { ...provide, scope: "transient" });
-    },
-    resolve<T>(
-      contract: Declaration<T>,
-      config: {
-        scope?: {};
-      }
-    ): T {
-      const provider = providers.getOrThrow(contract.token) as Provider<T>;
-      const { scope = defaultScope } = provider;
-
-      switch (scope) {
-        case "scoped": {
-          if (typeof config.scope === "undefined") {
-            throw new Error(
-              'in order to use scoped providers, you must provide a scope in your call to "Context.run(...)"'
-            );
-          }
-
-          const scoped = scopes.getOrDefault(config.scope);
-          let instance = scoped.get(contract.token);
-
-          if (typeof instance === "undefined") {
-            instance = instanciate(provider);
-            scoped.set(contract.token, instance);
-          }
-
-          return instance as T;
-        }
-
-        case "singleton": {
-          const singletons = scopes.getOrDefault(__singletonScope);
-          let singleton = singletons.get(contract.token);
-
-          if (typeof singleton === "undefined") {
-            singleton = instanciate(provider);
-            singletons.set(contract.token, singleton);
-          }
-
-          return singleton as T;
-        }
-
-        case "transient": {
-          return instanciate(provider);
-        }
-      }
-    },
-  });
+  return provider;
 }
 
-function instanciate<T>(provide: Provider<T>) {
-  if ("class" in provide) {
-    return new provide.class();
+export function use<T, S extends boolean>(
+  ctx: Context<T>,
+  { strict = false as S }: { strict?: S } = {},
+): S extends true ? T : T | undefined {
+  if (!(CTX_VALUE in ctx)) {
+    throw new Error(`${ctx.name} is not a valid context`);
   }
 
-  if ("factory" in provide) {
-    return provide.factory();
+  const value = ctx[CTX_VALUE] as T | undefined;
+
+  if (strict && typeof value === "undefined") {
+    throw new Error("using context outside provider");
   }
 
-  return provide.value;
+  return value as T;
 }

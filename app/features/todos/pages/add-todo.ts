@@ -4,7 +4,7 @@ import { TodoForm } from "../components/todo-form.js";
 
 export const AddTodo = component(({}) => {
   return {
-    model: $({
+    bind: $({
       "div#todo-form": TodoForm({}),
     }),
     render() {

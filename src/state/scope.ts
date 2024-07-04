@@ -1,4 +1,4 @@
-import { context, use } from "../context/context.js";
+import { context, use } from "../ioc/context.js";
 import { State } from "./state.js";
 
 export type Action = () => void;
