@@ -1,4 +1,4 @@
-import { context, use } from "../../ioc/context.js";
+import { context, use } from "../../r8y/context.js";
 import { derived } from "../../state/derived.js";
 import { onDestroy, subscribe } from "../../state/pubsub.js";
 import { extend, state } from "../../state/state.js";

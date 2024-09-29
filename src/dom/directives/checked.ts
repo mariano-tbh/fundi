@@ -1,11 +1,9 @@
-import { subscribe } from "../../state/pubsub.js";
-import { State } from "../../state/state.js";
-import { ofType } from "../utils/of-type.js";
+import { Observable } from "../operators/state.js";
 import { directive } from "./_directive.js";
 
 export const checked = directive(
   <T>(
-    state: State<T>,
+    state: Observable<T>,
     config: {
       event?: "change" | "blur" | "input";
       toState?(value: boolean): T;
@@ -18,7 +16,7 @@ export const checked = directive(
       toValue = (value) => Boolean(value),
     } = config;
 
-    return ofType(HTMLInputElement)((checkbox) => {
+    return ((checkbox: HTMLInputElement) => {
       if (checkbox.type !== "checkbox") {
         throw new Error("this directive should only be applied on checkboxes");
       }
@@ -29,7 +27,7 @@ export const checked = directive(
         }
       });
 
-      subscribe(state, (value) => {
+      state.subscribe((value) => {
         checkbox.checked = toValue(value);
       });
     });

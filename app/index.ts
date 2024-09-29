@@ -1,20 +1,27 @@
-import { component } from "../src/dom/component.js";
-import { $ } from "../src/dom/model.js";
-import router from "./_router.js";
+import { component } from '../src/dom/index.js'
+import { Counter } from './components/counter.js'
+// import router from './_router.js'
 
 const App = component(() => {
-  return {
-    bind: $({
-      "main#router": (main) => router.route(main),
-    }),
-    render() {
-      return /*html*/ `<div>
-        <main class="container mx-auto p-5 my-10 border-solid border-2 rounded shadow-md" id="router"></main>
-      </div>`;
-    },
-  };
-});
+	return ({ ref }) => {
+		ref.innerHTML = /*html*/ `
+			<main class="container mx-auto p-5 my-10 border-solid border-2 rounded shadow-md">
+				<div id="counter"></div>
+			</main>
+		`
 
-const root = document.getElementById("root")!;
+		Counter({
+			start: 10,
+			onChange(value) {
+				console.log('value changed: ', value)
+			},
+		})(document.getElementById('counter')!)
 
-App({})(root);
+	}
+})
+
+const root = document.getElementById('root')
+
+if (!root) throw new Error('root ')
+
+App({})(root)

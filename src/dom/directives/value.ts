@@ -1,11 +1,9 @@
-import { subscribe } from "../../state/pubsub.js";
-import { State } from "../../state/state.js";
-import { ofType } from "../utils/of-type.js";
+import { Observable } from "../operators/state.js";
 import { directive } from "./_directive.js";
 
 export const value = directive(
   <T>(
-    state: State<T>,
+    state: Observable<T>,
     config: {
       event?: "change" | "blur" | "input";
       toState?(value: string): T;
@@ -18,14 +16,14 @@ export const value = directive(
       toValue = (value) => String(value),
     } = config;
 
-    return ofType(HTMLInputElement)((input) => {
+    return ((input: HTMLInputElement) => {
       input.addEventListener(event, ({ currentTarget }) => {
         if (currentTarget instanceof HTMLInputElement) {
           state.value = toState(currentTarget.value);
         }
       });
 
-      subscribe(state, (value) => {
+      state.subscribe((value) => {
         input.value = toValue(value);
       });
     });

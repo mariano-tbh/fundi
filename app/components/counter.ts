@@ -1,35 +1,29 @@
-import { component } from "../../src/dom/component.js";
-import { on } from "../../src/dom/directives/on.js";
-import { $ } from "../../src/dom/model.js";
-import { effect } from "../../src/state/effect.js";
-import { subscribe } from "../../src/state/pubsub.js";
-import { state } from "../../src/state/state.js";
+import { component, effect, state } from '../../src/dom/index.js'
 
 export const Counter = component<{
-  start: number;
-  onChange(value: number): void;
+  start: number
+  onChange(value: number): void
 }>(({ start, onChange }) => {
-  const count = state(start);
+  const count = state(start)
 
-  subscribe(count, onChange);
+  count.subscribe(onChange)
 
   effect(() => {
     if (count.value < 0) {
-      count.value = 0;
+      count.value = 0
     }
-  });
+  })
 
-  return {
-    bind: $({
-      "button#inc": on("click", () => count.value++),
-      "button#dec": on("click", () => count.value--),
-    }),
-    render() {
-      return /*html*/ `<div>
-        <button id="inc">+</button>
-        <button id="dec">-</button>
-        <span>the count is: ${count.value}</span>
-      </div>`;
-    },
-  };
-});
+  return ({ ref }) => {
+    ref.innerHTML = /*html*/ `<div>
+      <h3>the count is: ${count.value}</h3>
+      <div>
+        <button class="btn btn-blue" id="inc">increment</button>
+        <button class="btn btn-blue" id="dec">decrement</button>
+      </div>
+      </div>`
+
+    document.getElementById('inc')!.addEventListener('click', () => count.value++)
+    document.getElementById('dec')!.addEventListener('click', () => count.value--)
+  }
+})
