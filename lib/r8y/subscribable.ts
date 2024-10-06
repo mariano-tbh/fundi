@@ -6,7 +6,7 @@ export type Unsubscribe = () => void
 
 export type EqualityFn<T> = (next: T, prev: T | undefined) => boolean
 
-export type PubsubConfig<T> = {
+export type SubscribableConfig<T> = {
     hot?: boolean
     equalityFn?: EqualityFn<T>
 }
@@ -28,7 +28,7 @@ export class Subscribable<T = unknown> extends Destroyable {
 
     #lastValue: T | undefined
 
-    constructor({ equalityFn = Object.is, hot = false }: PubsubConfig<T> = {}) {
+    constructor({ equalityFn = Object.is, hot = false }: SubscribableConfig<T> = {}) {
         super()
         this.#equalityFn = equalityFn
         this.#hot = hot
@@ -55,9 +55,9 @@ export class Subscribable<T = unknown> extends Destroyable {
     subscribe(sub: Subscription<T>, options: SubscribeOptions = {}): Unsubscribe {
         this.assertNotDestroyed()
 
-        let __sub: Subscription<T>
-
         const { hot = this.#hot, once = false } = options
+
+        let __sub: Subscription<T>
 
         if (once) {
             __sub = (next, prev) => {

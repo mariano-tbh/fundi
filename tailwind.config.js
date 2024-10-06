@@ -1,3 +1,5 @@
+import twElementsPlugin from "tw-elements/plugin.cjs"
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -8,6 +10,6 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [require("tw-elements/plugin.cjs")],
+  plugins: [twElementsPlugin],
   darkMode: "class",
 };

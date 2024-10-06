@@ -1,12 +1,12 @@
-import { Subscribable, PubsubConfig } from "./subscribable.js";
+import { Subscribable, SubscribableConfig } from "./subscribable.js";
 import { ReactiveContext } from "./reactive-context.js";
 
 export class Observable<T = unknown> extends Subscribable<T> {
-    #value: T
+    #value!: T
 
-    constructor(initialValue: T, options: PubsubConfig<T> = {}) {
+    constructor(initialValue: T, options: SubscribableConfig<T> = {}) {
         super(options)
-        this.#value = initialValue
+        this.value = initialValue
     }
 
     get [Symbol.toStringTag]() {

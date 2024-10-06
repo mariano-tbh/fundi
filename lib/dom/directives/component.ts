@@ -19,11 +19,20 @@ export function component<Props extends {} = {}>(
             return definition(props)
         }
 
-        const render = ComponentContext.run(deps, mount)
-
         return (ref) => {
-            effect(({ signal }) => {
-                render({ ref, signal })
+            const render = ComponentContext.run(deps, mount)
+
+            const effectRef = effect(({ signal }) => {
+                requestAnimationFrame(() => {
+                    render({ ref, signal })
+                })
+            })
+
+            ComponentContext.value.add({
+                destroy() {
+                    effectRef.destroy()
+                    deps.forEach(dep => dep.destroy())
+                },
             })
         }
     }

@@ -1,6 +1,10 @@
 import { Action } from "../ctx/context.js";
 import { ReactiveContext } from "./reactive-context.js";
-import { Subscribable, PubsubConfig } from "./subscribable.js";
+import { Subscribable, SubscribableConfig } from "./subscribable.js";
+
+export type ComputedConfig<T> = SubscribableConfig<T> & {
+    lazy?: boolean
+}
 
 export class Computed<T> extends Subscribable<T> {
     readonly #action: Action<T>
@@ -9,9 +13,16 @@ export class Computed<T> extends Subscribable<T> {
     #isStarted = false
     #lastValue: T | undefined
 
-    constructor(action: Action<T>, options: PubsubConfig<T> = {}) {
-        super(options)
+    constructor(action: Action<T>, options: ComputedConfig<T> = {}) {
+        const { lazy = false, ...subscribableConfig } = options
+
+        super(subscribableConfig)
         this.#action = action
+
+        if (!lazy) {
+            // read value once to activate dependencies
+            this.value = this.value
+        }
     }
 
     get [Symbol.toStringTag]() {

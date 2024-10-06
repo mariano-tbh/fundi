@@ -5,7 +5,7 @@ export interface IDestroyable {
 export abstract class Destroyable implements IDestroyable {
     readonly #actions = new Set<VoidFunction>()
 
-    #isDestroyed: boolean = false
+    #isDestroyed = false
 
     get isDestroyed(): boolean {
         return this.#isDestroyed
