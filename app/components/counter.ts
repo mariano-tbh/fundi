@@ -1,13 +1,13 @@
 import { appSettings } from '@app/stores/settings.js'
-import { component, html, state, value } from '../../lib/dom/index.js'
+import { $component, html, $state, $value } from '../../lib/dom/index.js'
 
-export const Counter = component<{
+export default $component<{
   initialValue: number
   onChange(value: number): void
-}>((props) => {
+}>(function Counter(props) {
   const { initialValue, onChange } = props
 
-  const count = state(initialValue)
+  const count = $state(initialValue)
 
   let ogTitle = appSettings.title
   count.subscribe((value) => {
@@ -29,7 +29,8 @@ export const Counter = component<{
       <h3>the double is: ${() => count.value * 2}</h3>
       <label>
         <span>set count:</span>
-        <input type="number" ${value(count, { toState: Number, toValue: String })} />
+        <input type="number" ${$value(count, { toState: Number, toValue: String })} />
+      </label>
       <div>
         <button class="btn btn-blue" id="inc" onclick=${increment}>increment</button>
         <button class="btn btn-blue" id="dec" onclick=${decrement}>decrement</button>

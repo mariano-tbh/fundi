@@ -1,7 +1,7 @@
 import { Observable } from "../operators/state.js";
 import { directive } from "./_directive.js";
 
-export const value = directive(
+export const $value = directive(
   <T>(
     state: Observable<T>,
     config: {
@@ -25,7 +25,7 @@ export const value = directive(
 
       state.subscribe((value) => {
         input.value = toValue(value);
-      });
+      }, { hot: true });
     });
   },
 );

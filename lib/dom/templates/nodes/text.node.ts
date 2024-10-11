@@ -3,34 +3,31 @@ import { isParameterlessFunction } from "../utils/is-parameterless-function.js";
 import { Computed } from "@lib/r8y/computed.js";
 import { TemplateNode } from "./_node.js";
 import { isRef } from "../utils/is-ref.js";
+import { VirtualNode } from "./virtual-node.js";
 
 export class TextNode extends TemplateNode {
-    readonly #node: Text;
+    readonly #root: VirtualNode;
     readonly #arg: unknown;
 
-    constructor(node: Text, arg: unknown) {
+    constructor(root: Text, arg: unknown) {
         super()
-        this.#node = node;
+        this.#root = document.createElement('v-node');
         this.#arg = arg;
-    }
-
-    get value() {
-        return this.#node.nodeValue ?? '';
+        root.replaceWith(this.#root);
     }
 
     set value(value: unknown) {
         requestAnimationFrame(() => {
-            this.#node.nodeValue = String(value ?? '')
+            if (isRef(value)) {
+                return value(this.#root.ref);
+            }
+
+            this.#root.ref.textContent = String(value ?? '');
         });
     }
 
     mount() {
         let value = this.#arg;
-
-        if (isRef(value)) {
-            value(this.#node);
-            return;
-        }
 
         if (isParameterlessFunction(this.#arg)) {
             value = new Computed(this.#arg, { lazy: false });

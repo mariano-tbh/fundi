@@ -31,12 +31,13 @@ export class AttrNode extends TemplateNode {
 
         if (isEventListener && this.#node.ownerElement !== null) {
             const name = this.#node.name.slice(2);
-
-            return this.#node.ownerElement.addEventListener(name, (...args) => {
+            this.#node.ownerElement.addEventListener(name, (...args) => {
                 if (isEventHandler(this.#arg)) {
                     this.#arg(...args);
                 }
             });
+            this.#node.ownerElement.removeAttribute(this.#node.name);
+            return
         }
 
         if (isParameterlessFunction(this.#arg)) {

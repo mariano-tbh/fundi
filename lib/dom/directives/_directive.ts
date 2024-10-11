@@ -1,7 +1,7 @@
-export type Directive<E extends Element = Element> = (element: E) => void;
+export type Directive<N extends Node = Node> = (node: N) => void;
 
-export function directive<Args extends unknown[], E extends Element = Element>(
-  factory: (...args: Args) => Directive<E>,
+export function directive<Args extends unknown[], N extends Node = Node>(
+  factory: (...args: Args) => Directive<N>,
 ) {
   return factory;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { async } from "./async.js";
+import { $async } from "./async.js";
 import { waitFor } from "@testing-library/dom";
-import { state } from "./state.js";
+import { $state } from "./state.js";
 
 describe("async", () => {
   type Todo = {
@@ -28,7 +28,7 @@ describe("async", () => {
   }
 
   test("async state", async () => {
-    const state = async({
+    const state = $async({
       loader: getTodos,
     });
 
@@ -42,8 +42,8 @@ describe("async", () => {
   });
 
   test("async state", async () => {
-    const todoId = state(1);
-    const todos = async({
+    const todoId = $state(1);
+    const todos = $async({
       loader: ({ signal }) => getTodoById(todoId.value, { signal }),
     });
 

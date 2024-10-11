@@ -1,6 +1,7 @@
 import { Observable } from "../../r8y/observable.js";
+import { ComponentContext } from "../directives/component.js";
 
-export function proxy<T extends object>(src: T): T {
+export function $store<T extends object>(src: T): T {
   const deps = new Map<keyof T, Observable>();
 
   function $state(target: T, p: keyof T, receiver: unknown) {
@@ -14,6 +15,16 @@ export function proxy<T extends object>(src: T): T {
 
     return $;
   }
+
+  ComponentContext.value.add({
+    destroy() {
+      for (const dep of deps.values()) {
+        dep.destroy();
+      }
+
+      deps.clear();
+    },
+  })
 
   return new Proxy(src, {
     get(target, p, receiver) {

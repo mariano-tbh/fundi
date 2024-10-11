@@ -1,5 +1,5 @@
-import { effect } from "./effect.js";
-import { proxy } from "./proxy.js";
+import { $effect } from "./effect.js";
+import { $store } from "./store.js";
 
 export type AsyncStatus = "pending" | "fulfilled" | "rejected";
 
@@ -27,13 +27,14 @@ export type Loader<T> = ({ signal }: { signal: AbortSignal }) => Promise<T>;
 export type AsyncConfig<T, I extends T | undefined> = {
   loader: Loader<T>;
   initialValue?: I;
+  enabled?: boolean | (() => boolean);
 };
 
-export function async<T, E = unknown>(loader: Loader<T>): AsyncState<T, E>;
-export function async<T, E = unknown, I extends T | undefined = undefined>(
+export function $async<T, E = unknown>(loader: Loader<T>): AsyncState<T, E>;
+export function $async<T, E = unknown, I extends T | undefined = undefined>(
   config: AsyncConfig<T, I>,
 ): AsyncState<T, E, I>;
-export function async<T, E = unknown, I extends T | undefined = undefined>(
+export function $async<T, E = unknown, I extends T | undefined = undefined>(
   config: Loader<T> | AsyncConfig<T, I>,
 ) {
   if (typeof config === "function") {
@@ -42,13 +43,13 @@ export function async<T, E = unknown, I extends T | undefined = undefined>(
 
   const { loader, initialValue } = config;
 
-  const state = proxy({
+  const state = $store({
     status: "pending",
     value: initialValue,
     error: undefined,
   } as AsyncState<T, E, I>);
 
-  effect(async ({ signal }) => {
+  $effect(async ({ signal }) => {
     state.status = "pending";
     try {
       state.value = await loader({ signal });

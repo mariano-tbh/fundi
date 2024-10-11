@@ -1,5 +1,8 @@
 import { Destroyable } from "@lib/r8y/destroyable.js";
 import { type TemplateNode, AttrNode, RefNode, TextNode } from "./nodes/index.js";
+import { VirtualNode } from "./nodes/virtual-node.js";
+
+export type RenderRoot = Node | Element | ShadowRoot
 
 export class Template extends Destroyable {
     static readonly TOKEN_REGEX = /{{{(\d+)}}}/;
@@ -21,22 +24,22 @@ export class Template extends Destroyable {
             return acc + str;
         }, "");
 
-        const template = document.createRange().createContextualFragment(innerHTML)
-
-        this.#template = template;
+        this.#template = document.createRange().createContextualFragment(innerHTML);
 
         this.processTemplate();
     }
 
-    mount(root: Node) {
+    mount(root: RenderRoot) {
         for (const node of this.#nodes) {
             requestAnimationFrame(() => node.mount());
         }
 
-        if (root instanceof Text) {
-            root.replaceWith(this.#template);
+        if (root instanceof ShadowRoot) {
+            root.replaceChildren(this.#template);
         } else if (root instanceof Element) {
             root.replaceChildren(this.#template);
+        } else if (root instanceof Text || root instanceof VirtualNode) {
+            root.replaceWith(this.#template);
         } else {
             throw new Error('Root must be an instance of Text or Element')
         }
@@ -79,8 +82,8 @@ export class Template extends Destroyable {
 
             const arg = this.#args.get(Number(captured));
             const text = remainder.splitText(remainder.nodeValue.indexOf(match));
-            text.textContent = '___$___'
             remainder = text.splitText(match.length);
+            text.textContent = ''
             this.#nodes.add(new TextNode(text, arg));
         }
     }
@@ -93,6 +96,7 @@ export class Template extends Destroyable {
                 const index = Number(match[1]);
                 const value = this.#args.get(index);
                 this.#nodes.add(new RefNode(node, value))
+                attr.ownerElement?.removeAttributeNode(attr);
                 continue
             }
 

@@ -44,7 +44,7 @@ export const OnError: OnError = (field, issue) => {
 	)
 }
 
-export const form = directive(
+export const $form = directive(
 	<T>(config: {
 		schema: ZodSchema<T>
 		onSubmit: OnSubmit<T>

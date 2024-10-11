@@ -1,7 +1,7 @@
 import { Observable } from "../operators/state.js";
 import { directive } from "./_directive.js";
 
-export const checked = directive(
+export const $checked = directive(
   <T>(
     state: Observable<T>,
     config: {
@@ -29,7 +29,7 @@ export const checked = directive(
 
       state.subscribe((value) => {
         checkbox.checked = toValue(value);
-      });
+      }, { hot: true });
     });
   },
 );

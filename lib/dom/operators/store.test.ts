@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { proxy } from "./proxy.js";
-import { derived } from "./derived.js";
+import { $store } from "./store.js";
+import { $derived } from "./derived.js";
 
 describe("store", () => {
   test("should create a state object which updates dependencies when property values are updated", () => {
-    const myStore = proxy({
+    const myStore = $store({
       user: "bob",
       likes: 1124,
       following: 123,
@@ -12,7 +12,7 @@ describe("store", () => {
       loginAt: Date.now(),
     });
 
-    const popularity = derived(() => {
+    const popularity = $derived(() => {
       const score = myStore.followers - myStore.following;
       if (score > 0) return "popular";
       if (score < 0) return "newbie";
