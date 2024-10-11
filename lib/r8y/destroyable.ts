@@ -1,25 +1,25 @@
 export interface IDestroyable {
-    destroy(): void
+	destroy(): void;
 }
 
 export abstract class Destroyable implements IDestroyable {
-    readonly #actions = new Set<VoidFunction>()
+	readonly #actions = new Set<VoidFunction>();
 
-    #isDestroyed = false
+	#isDestroyed = false;
 
-    get isDestroyed(): boolean {
-        return this.#isDestroyed
-    }
+	get isDestroyed(): boolean {
+		return this.#isDestroyed;
+	}
 
-    destroy(): void {
-        this.#isDestroyed = true
+	destroy(): void {
+		this.#isDestroyed = true;
 
-        for (const action of this.#actions) {
-            action()
-        }
-    }
+		for (const action of this.#actions) {
+			action();
+		}
+	}
 
-    protected onDestroy(action: VoidFunction) {
-        this.#actions.add(action)
-    }
+	protected onDestroy(action: VoidFunction) {
+		this.#actions.add(action);
+	}
 }

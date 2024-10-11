@@ -1,5 +1,5 @@
-import { Destroyable } from "@lib/r8y/destroyable.js";
+import {Destroyable} from '@lib/r8y/destroyable.js';
 
 export abstract class TemplateNode extends Destroyable {
-    abstract mount(): void;
+	abstract mount(): void;
 }

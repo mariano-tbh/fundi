@@ -1,30 +1,27 @@
 export class VirtualNode extends HTMLElement {
-    readonly #shadowRoot: ShadowRoot
+	readonly #shadowRoot: ShadowRoot;
 
-    constructor() {
-        super()
-        this.#shadowRoot = this.attachShadow({ mode: 'open', delegatesFocus: true })
-    }
+	constructor() {
+		super();
+		this.#shadowRoot = this.attachShadow({
+			mode: 'open',
+			delegatesFocus: true,
+		});
+	}
 
-    get ref() {
-        return this.#shadowRoot
-    }
+	get ref() {
+		return this.#shadowRoot;
+	}
 
-    connectedCallback() {
-        const style = document.createElement('style')
-        style.textContent = `
-            :host {
-                display: contents;
-            }
-        `
-        this.#shadowRoot.appendChild(style)
-    }
+	connectedCallback() {
+		this.#shadowRoot.host.setAttribute('style', 'display: contents;');
+	}
 }
 
-customElements.define('v-node', VirtualNode)
+customElements.define('v-node', VirtualNode);
 
 declare global {
-    interface HTMLElementTagNameMap {
-        'v-node': VirtualNode
-    }
+	interface HTMLElementTagNameMap {
+		'v-node': VirtualNode;
+	}
 }

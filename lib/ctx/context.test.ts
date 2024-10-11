@@ -1,37 +1,37 @@
-import { describe, expect, test } from "vitest";
-import { Context } from "./context.js";
+import {describe, expect, test} from 'vitest';
+import {Context} from './context.js';
 
-describe("context", () => {
-  test("simple case", () => {
-    const myContext = new Context<string>('foo');
+describe('context', () => {
+	test('simple case', () => {
+		const myContext = new Context<string>('foo');
 
-    const expected = "hello world";
+		const expected = 'hello world';
 
-    myContext.run(expected, () => {
-      const value = myContext.value;
-      expect(value).toEqual(expected);
-    });
-  });
+		myContext.run(expected, () => {
+			const value = myContext.value;
+			expect(value).toEqual(expected);
+		});
+	});
 
-  test("nested contexts", () => {
-    const myContext = new Context<string>('hey');
+	test('nested contexts', () => {
+		const myContext = new Context<string>('hey');
 
-    myContext.run("foo", () => {
-      expect((myContext).value).toEqual("foo");
+		myContext.run('foo', () => {
+			expect(myContext.value).toEqual('foo');
 
-      myContext.run("bar", () => {
-        expect(myContext.value).toEqual("bar");
+			myContext.run('bar', () => {
+				expect(myContext.value).toEqual('bar');
 
-        myContext.run("baz", () => {
-          expect(myContext.value).toEqual("baz");
-        });
+				myContext.run('baz', () => {
+					expect(myContext.value).toEqual('baz');
+				});
 
-        expect(myContext.value).toEqual("bar");
-      });
+				expect(myContext.value).toEqual('bar');
+			});
 
-      expect(myContext.value).toEqual("foo");
-    });
+			expect(myContext.value).toEqual('foo');
+		});
 
-    expect(myContext.value).toEqual('hey')
-  });
+		expect(myContext.value).toEqual('hey');
+	});
 });
